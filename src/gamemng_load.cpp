@@ -6,6 +6,10 @@
 
 #include "load_texture.h"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 extern unsigned int map_octopus_min_tris;
 
 extern float g_state0_time;

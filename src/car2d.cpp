@@ -2,6 +2,10 @@
 #include <algorithm>
 #include <cmath>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 using namespace RBf;
 
 const float g_front_slip_ratio = 1.3f;//1.2;

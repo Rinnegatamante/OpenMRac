@@ -1,0 +1,35 @@
+TARGET		:= OpenMRac
+SOURCES	:= .
+
+LIBS	:= -lSDL2 -lvitaGL -lvitashark -lmathneon -lSceShaccCgExt -lSceShaccCg_stub -ltaihen_stub \
+	-lopenal -lpng -ljpeg \
+	-lpthread -lSceAudio_stub -lSceAudioIn_stub -lSceHid_stub -lz -lScePower_stub -lSceAppUtil_stub \
+	-lSceAppMgr_stub -lSceCommonDialog_stub -lSceCtrl_stub -lSceGxm_stub -lSceMotion_stub -lSceNet_stub \
+	-lSceTouch_stub -lSceSysmodule_stub -lSceKernelDmacMgr_stub -lSceDisplay_stub -lSceIme_stub
+
+CFILES   := $(foreach dir,$(SOURCES), $(wildcard $(dir)/*.c))
+CPPFILES   := $(foreach dir,$(SOURCES), $(wildcard $(dir)/*.cpp))
+OBJS     := $(CFILES:.c=.o) $(CPPFILES:.cpp=.o) 
+
+PREFIX  = arm-vita-eabi
+CC      = $(PREFIX)-gcc
+CXX      = $(PREFIX)-g++
+CFLAGS  = -fno-lto -g -Wl,-q -O3 -DNDEBUG -DUSE_GLESv2 -DDIR_OPENMRAC_DAT=ux0:data/openmrac/ \
+		-I$(VITASDK)/$(PREFIX)/include/SDL2
+
+CXXFLAGS  = $(CFLAGS) -fno-exceptions -std=c++20 -fpermissive
+ASFLAGS = $(CFLAGS)
+
+all: $(TARGET).velf
+
+%.velf: %.elf
+	cp $< $<.unstripped.elf
+	$(PREFIX)-strip -g $<
+	vita-elf-create $< $@
+	vita-make-fself -c -s $@ eboot.bin
+
+$(TARGET).elf: $(OBJS)
+	$(CXX) $(CXXFLAGS) $^ $(LIBS) -o $@
+
+clean:
+	@rm -rf $(TARGET).velf $(TARGET).elf $(TARGET).sysvelf $(OBJS)

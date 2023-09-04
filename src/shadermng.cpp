@@ -229,10 +229,6 @@ TEST_STR_EC_COMPLETE(ShaderUniTex);
         {
             adaptShader(vs, fs, g_opengl_profile);
             GLuint programObject = glCreateProgram();
-            for (int i = 0; i != (GLuint)ShaderAttrib::Count; ++i)
-            {
-                glBindAttribLocation(programObject, i, strShaderAttrib(i));
-            }
             GLuint vId = loadShader(GL_VERTEX_SHADER,   vs.c_str(), strShaderId(id));
             GLuint fId = loadShader(GL_FRAGMENT_SHADER, fs.c_str(), strShaderId(id));
 
@@ -240,6 +236,11 @@ TEST_STR_EC_COMPLETE(ShaderUniTex);
             {
                 glAttachShader(programObject, vId);
                 glAttachShader(programObject, fId);
+				
+				for (int i = 0; i != (GLuint)ShaderAttrib::Count; ++i)
+                {
+                    glBindAttribLocation(programObject, i, strShaderAttrib(i));
+                }
 
                 // Link the program
                 glLinkProgram(programObject);

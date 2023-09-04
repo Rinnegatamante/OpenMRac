@@ -10,6 +10,20 @@
 #include "gl1.h"
 #include "error_msg.h"
 
+#ifdef __vita__
+#include <vitasdk.h>
+int _newlib_heap_size_user = 128 * 1024 * 1024;
+
+typedef enum {
+	VGL_MODE_SHADER_PAIR,
+	VGL_MODE_GLOBAL,
+	VGL_MODE_POSTPONED
+} vglSemanticMode;
+
+extern "C" void vglSetSemanticBindingMode(GLenum mode);
+extern "C" GLboolean vglInitExtended(int legacy_pool_size, int width, int height, int ram_threshold, SceGxmMultisampleMode msaa);
+#endif
+
 #ifdef USE_MINIAL
 #include "minial.h"
 #else
@@ -162,7 +176,9 @@ void saveTgaScreenshot(const char* filenamePrm = nullptr)
 void initScreenModesVector(std::vector<ScreenMode>& screenModesVector, ScreenMode& currentScreenMode, ScreenMode defaultScreenMode)
 {
     std::set<ScreenMode> screenModesSet;
-
+#ifdef __vita__
+	screenModesSet.insert(ScreenMode(960, 544, 0));
+#else
     screenModesSet.insert(currentScreenMode);
     screenModesSet.insert(defaultScreenMode);
 
@@ -195,6 +211,7 @@ void initScreenModesVector(std::vector<ScreenMode>& screenModesVector, ScreenMod
             screenModesSet.insert(ScreenMode(dm.w, dm.h, 0));
         }
     }
+#endif
     std::copy(screenModesSet.begin(), screenModesSet.end(), std::back_inserter(screenModesVector));
 }
 
@@ -272,7 +289,6 @@ int my_main (int argc, char** argv)
     {
         ScreenMode currentScreenMode(settings.get("screen_x"), settings.get("screen_y"), settings.get("fullscreen"));
         ScreenMode defaultScreenMode(settings.getDefault("screen_x"), settings.getDefault("screen_y"), settings.getDefault("fullscreen"));
-
         std::vector<ScreenMode> screenModesVector;
         initScreenModesVector(screenModesVector, currentScreenMode, defaultScreenMode);
 
@@ -948,6 +964,17 @@ int my_main (int argc, char** argv)
 
 int main (int argc, char** argv)
 {
+#ifdef __vita__
+	argc = 0;
+	scePowerSetArmClockFrequency(444);
+	scePowerSetBusClockFrequency(222);
+	scePowerSetGpuClockFrequency(222);
+	scePowerSetGpuXbarClockFrequency(166);
+	vglSetSemanticBindingMode(VGL_MODE_SHADER_PAIR);
+	SDL_setenv("VITA_DISABLE_TOUCH_BACK", "1", 1);
+	SDL_setenv("VITA_USE_GLSL_TRANSLATOR", "1", 1);
+	vglInitExtended(0, 960, 544, 8 * 1024 * 1024, SCE_GXM_MULTISAMPLE_4X);
+#endif
     int ret = my_main(argc, argv);
     my_exit(ret, false);
     return ret;

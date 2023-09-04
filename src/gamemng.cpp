@@ -14,6 +14,10 @@
 
 #include "glm1.h"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 SDL_Window* gameWindow = 0;
 
 int ge_bpass1 = 1;
@@ -948,12 +952,14 @@ void Gamemng::render_frame(const glm::mat4& m)
 
         bool useSampleCoverage = g_multisampleMode;
 
+#ifndef __vita__
         if (useSampleCoverage)
         {
             glSampleCoverage(0.5, GL_FALSE); checkGL();
             glEnable(GL_SAMPLE_COVERAGE); checkGL();
         }
         else
+#endif
         {
             p_shadermng.set(ShaderUniInt::Halftone, (GLint)1);
         }

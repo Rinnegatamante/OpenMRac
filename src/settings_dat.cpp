@@ -13,8 +13,13 @@
 const Sett_entry_base entry_base[] = {
     {"renderer", DEFAULT_PROFILE, PROFILE_MIN, PROFILE_MAX, "0 - GL Compatibility, 1 - GL Core 3, 2 - GLES2"},
     {"fullscreen", 0, 0, 1, "0 - windowed, 1 - fullscreen"},
+#ifdef __vita__
+    {"screen_x", 960, 0, UINT_MAX, "screen resolution"},
+    {"screen_y", 544, 0, UINT_MAX, ""},
+#else
     {"screen_x", 1280, 0, UINT_MAX, "screen resolution"},
     {"screen_y", 720, 0, UINT_MAX, ""},
+#endif
     {"vsync", 1, 0, 1, "0 - vsync off, 1 - vsync on"},
     {"antialiasing", 0, 0, 2, "0 - off, 1 - 2x, 2 - 4x"},
     {"texture_filter", 1, 0,

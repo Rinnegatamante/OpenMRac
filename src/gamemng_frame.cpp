@@ -9,6 +9,10 @@
 
 #include "soundmng.h"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 extern int ge_bpass1; // globální vypnutí aktualizace pohledu
 
 extern int g_freecam;
