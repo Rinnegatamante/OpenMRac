@@ -13,14 +13,6 @@
 #ifdef __vita__
 #include <vitasdk.h>
 int _newlib_heap_size_user = 128 * 1024 * 1024;
-
-typedef enum {
-	VGL_MODE_SHADER_PAIR,
-	VGL_MODE_GLOBAL,
-	VGL_MODE_POSTPONED
-} vglSemanticMode;
-
-extern "C" void vglSetSemanticBindingMode(GLenum mode);
 extern "C" GLboolean vglInitExtended(int legacy_pool_size, int width, int height, int ram_threshold, SceGxmMultisampleMode msaa);
 #endif
 
@@ -771,6 +763,58 @@ int my_main (int argc, char** argv)
                 }
             case SDL_JOYBUTTONDOWN:
                 {
+					if (menu.p_bactive)
+                    {
+						if (event.jbutton.button == 6) {
+							done = menu.keydown(SDLK_DOWN);
+							break;
+						} else if (event.jbutton.button == 8) {
+							done = menu.keydown(SDLK_UP);
+							break;
+						} else if (event.jbutton.button == 7) {
+							done = menu.keydown(SDLK_LEFT);
+							break;
+						} else if (event.jbutton.button == 9) {
+							done = menu.keydown(SDLK_RIGHT);
+							break;
+						} else if (event.jbutton.button == 2) {
+							done = menu.keydown(SDLK_RETURN);
+							break;
+						} else if (event.jbutton.button == 1) {
+							done = menu.keydown(SDLK_ESCAPE);
+							break;
+						}
+                    }
+					
+					if (gamemng.p_gamemenu.bmenu) {
+						if (event.jbutton.button == 6) {
+							gamemng.p_gamemenu.keydown(SDLK_DOWN);
+							break;
+						} else if (event.jbutton.button == 8) {
+							gamemng.p_gamemenu.keydown(SDLK_UP);
+							break;
+						} else if (event.jbutton.button == 7) {
+							gamemng.p_gamemenu.keydown(SDLK_LEFT);
+							break;
+						} else if (event.jbutton.button == 9) {
+							gamemng.p_gamemenu.keydown(SDLK_RIGHT);
+							break;
+						} else if (event.jbutton.button == 2) {
+							gamemng.p_gamemenu.keydown(SDLK_RETURN);
+							break;
+						} else if (event.jbutton.button == 1) {
+							gamemng.p_gamemenu.keydown(SDLK_ESCAPE);
+							break;
+						}
+					}
+
+                    // exit if ESCAPE is pressed
+                    //if (gamemng.p_gamemenu.bmenu /*|| (gamemng.p_state == 2 && event.key.keysym.sym == SDLK_RETURN)*/)
+                    {
+						if (event.jbutton.button == 11)
+							gamemng.p_gamemenu.keydown(SDLK_ESCAPE);
+                    }
+					
                     for (int i = 0; i != 16; ++i)
                     {
                         if (controls[i].type == Control::E_JBUTTON && event.jbutton.which == controls[i].joystickDeviceIndex && event.jbutton.button == controls[i].i)
@@ -965,12 +1009,12 @@ int my_main (int argc, char** argv)
 int main (int argc, char** argv)
 {
 #ifdef __vita__
+	sceSysmoduleLoadModule(SCE_SYSMODULE_RAZOR_CAPTURE);
 	argc = 0;
 	scePowerSetArmClockFrequency(444);
 	scePowerSetBusClockFrequency(222);
 	scePowerSetGpuClockFrequency(222);
 	scePowerSetGpuXbarClockFrequency(166);
-	vglSetSemanticBindingMode(VGL_MODE_SHADER_PAIR);
 	SDL_setenv("VITA_DISABLE_TOUCH_BACK", "1", 1);
 	SDL_setenv("VITA_USE_GLSL_TRANSLATOR", "1", 1);
 	vglInitExtended(0, 960, 544, 8 * 1024 * 1024, SCE_GXM_MULTISAMPLE_4X);

@@ -5,6 +5,16 @@
 #include <string>
 #include <regex>
 
+#ifdef __vita__
+typedef enum {
+	VGL_MODE_SHADER_PAIR,
+	VGL_MODE_GLOBAL,
+	VGL_MODE_POSTPONED
+} vglSemanticMode;
+
+extern "C" void vglSetSemanticBindingMode(GLenum mode);
+#endif
+
 #define STR_SWCASE(prefix, ec, id) case ec::id: return prefix #id
 
 inline const char* strShaderId(ShaderId a)
@@ -166,6 +176,9 @@ static void adaptShader(std::string& vs, std::string& fs, int opengl_profile)
 
 void ShaderMng::init()
 {
+#ifdef __vita__
+	vglSetSemanticBindingMode(VGL_MODE_POSTPONED);
+#endif
 #if 0 // test stringify completeness
 #define TEST_STR_EC_COMPLETE(ec) do { for (int i = 0; i != (int)ec::Count; ++i) str##ec(i); } while (false)
 TEST_STR_EC_COMPLETE(ShaderAttrib);
@@ -288,6 +301,9 @@ TEST_STR_EC_COMPLETE(ShaderUniTex);
         }
     }
     glUseProgram(0);
+#ifdef __vita__
+	vglSetSemanticBindingMode(VGL_MODE_SHADER_PAIR);
+#endif
 }
 
 void ShaderMng::use(ShaderId id)

@@ -110,7 +110,11 @@ void MainMenu::init(Gamemng* gamemng, Settings* settings)
     p_text_main_www.init(70, 1, /*0.8f*/ 1.2f, 0, 0, &(p_gamemng->p_glfont), font_color_hi);
     //p_text_main_www.set_pos(0.f, -14.f + 0.5f);
     p_text_main_www.set_pos(0.f, -14.f + 1.0f);
+#ifdef __vita__
+    p_text_main_www.puts(0, "github.com/Rinnegatamante/OpenMRac");
+#else
     p_text_main_www.puts(0, "github.com/Franticware/OpenMRac");
+#endif
     p_text_main_ver.init(15, 1, 0.8f, -1, 0, &(p_gamemng->p_glfont), font_color);
     p_text_main_ver.set_pos(9.f, 4.f - 0.7f);
     p_text_main_ver.puts(0, OPENMRAC_VERSION);
@@ -889,14 +893,89 @@ void MainMenu::event(const SDL_Event& e)
         }
         case SDL_JOYBUTTONDOWN:
         {
-            if (p_state >= STATE_CONTROLS_P1_UP && p_state <= STATE_CONTROLS_P4_RIGHT && p_enterMode)
+            if (p_state >= STATE_CONTROLS_P1_UP && p_state <= STATE_CONTROLS_P4_RIGHT)
             {
-                int i = p_state - STATE_CONTROLS_P1_UP;
-                p_settings->controls[i].type = Control::E_JBUTTON;
-                p_settings->controls[i].i = e.jbutton.button;
-                p_settings->controls[i].joystickDeviceIndex = e.jbutton.which;
-                p_controlsChanged = true;
-                exitEnterMode();
+				if (p_enterMode) {
+					int i = p_state - STATE_CONTROLS_P1_UP;
+					p_settings->controls[i].type = Control::E_JBUTTON;
+					p_settings->controls[i].i = e.jbutton.button;
+					p_settings->controls[i].joystickDeviceIndex = e.jbutton.which;
+					p_controlsChanged = true;
+					exitEnterMode();
+				}
+				else
+                {
+                    if (e.jbutton.button == 8)
+                    {
+                        if (p_state == STATE_CONTROLS_BEGIN)
+                        {
+                            p_state = STATE_CONTROLS_END - 1;
+                        }
+                        else
+                        {
+                            --p_state;
+                        }
+                    }
+                    else if (e.jbutton.button == 6)
+                    {
+                        ++p_state;
+                        if (p_state == STATE_CONTROLS_END)
+                        {
+                            p_state = STATE_CONTROLS_BEGIN;
+                        }
+                    }
+                    else if (e.jbutton.button == 1)
+                    {
+                        p_state = STATE_CONTROLS;
+                        if (p_controlsChanged)
+                        {
+                            p_controlsChanged = false;
+                            //cout << "save settings" << endl;
+                            //p_settings->save();
+                        }
+                    }
+                    else if (e.jbutton.button == 2)
+                    {
+                        p_enterMode = true;
+                    }
+                }
+			} else if (p_state == STATE_CONTROLS && (e.jbutton.button == 2))
+            {
+                p_state = STATE_CONTROLS_TEST_KEYBOARD;
+                //p_controlsChanged = true;
+                //exitEnterMode();
+                p_enterMode = false; // počáteční inicializace
+            } else if (p_state == STATE_CONTROLS_TEST_KEYBOARD)
+            {
+                if (e.jbutton.button == 8)
+                {
+                    if (p_state == STATE_CONTROLS_BEGIN)
+                    {
+                        p_state = STATE_CONTROLS_END - 1;
+                    }
+                    else
+                    {
+                        --p_state;
+                    }
+                }
+                else if (e.jbutton.button == 6)
+                {
+                    ++p_state;
+                    if (p_state == STATE_CONTROLS_END)
+                    {
+                        p_state = STATE_CONTROLS_BEGIN;
+                    }
+                }
+                else if (e.jbutton.button == 1)
+                {
+                    p_state = STATE_CONTROLS;
+                    if (p_controlsChanged)
+                    {
+                        p_controlsChanged = false;
+                        //cout << "save settings" << endl;
+                        //p_settings->save();
+                    }
+                }
             }
             break;
         }
