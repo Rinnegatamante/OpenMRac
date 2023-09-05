@@ -1,3 +1,11 @@
+# OpenMRac Vita
+
+Port of OpenMRac for PSVITA.<br>
+OpenMRac is an opensource racing game with time trial and up to 4 players split-screen multiplayer.<br>
+Thanks to withLogic for testing the split screen functionality on PSVita.
+
+## Original Readme:
+
 # OpenMRac
 
 [![OpenMRac youtube video](media/openmrac-yt.jpg)](https://youtu.be/r3hLTo5Nu1g)

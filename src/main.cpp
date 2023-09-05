@@ -211,7 +211,11 @@ void initScreenModesVector(std::vector<ScreenMode>& screenModesVector, ScreenMod
 
 int my_main (int argc, char** argv)
 {
+#ifdef __vita__
+    bool skipSettings = true;
+#else
     bool skipSettings = false;
+#endif
     for (int i = 1; i < argc; ++i)
     {
         if (strcmp(argv[i], "--skip-settings") == 0)
@@ -1009,7 +1013,7 @@ int my_main (int argc, char** argv)
 int main (int argc, char** argv)
 {
 #ifdef __vita__
-	sceSysmoduleLoadModule(SCE_SYSMODULE_RAZOR_CAPTURE);
+	sceIoMkdir("ux0:data/openmrac", 0777);
 	argc = 0;
 	scePowerSetArmClockFrequency(444);
 	scePowerSetBusClockFrequency(222);
